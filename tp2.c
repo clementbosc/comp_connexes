@@ -112,14 +112,11 @@ void ajoutEtiquette(int* equivalences, int* nbEtiquettes){
 Matrix coordonneesVoisins(Image image,int y,int x, TypeVoisinage voisinage){
     Matrix coords = NULL;
     int NbLig,NbCol;
-    unsigned char **I;
     int **M;
 
     NbLig = ImNbRow(image) - 1; 
     NbCol = ImNbCol(image) - 1;
 
-
-    //I = ImGetI(image);
 
     if (voisinage == V4){
 
@@ -134,7 +131,9 @@ Matrix coordonneesVoisins(Image image,int y,int x, TypeVoisinage voisinage){
 
             M[1][1] = x;
             M[0][1] = y+1;
-        }else if(x == NbCol && y == 0){ /*Coin 2*/
+            
+        }
+        else if(x == NbCol && y == 0){ /*Coin 2*/
             coords = MatAlloc(Int,2,2);
             M = MatGetInt(coords);
 
@@ -143,6 +142,7 @@ Matrix coordonneesVoisins(Image image,int y,int x, TypeVoisinage voisinage){
 
             M[1][1] = x;
             M[0][1] = y+1;
+            
         }
         else if(x == 0 && y == NbLig){ /*Coin 3*/
             coords = MatAlloc(Int,2,2);
@@ -153,6 +153,7 @@ Matrix coordonneesVoisins(Image image,int y,int x, TypeVoisinage voisinage){
 
             M[1][1] = x+1;
             M[0][1] = y;
+            
         }
         else if(x == NbCol && y == NbLig){ /*Coin 4*/
             coords = MatAlloc(Int,2,2);
@@ -163,6 +164,7 @@ Matrix coordonneesVoisins(Image image,int y,int x, TypeVoisinage voisinage){
 
             M[1][1] = x-1;
             M[0][1] = y;
+            
         }
 
         else if(x > 0 && y == 0){ /* Bord haut */
@@ -177,6 +179,7 @@ Matrix coordonneesVoisins(Image image,int y,int x, TypeVoisinage voisinage){
 
             M[1][2] = x;
             M[0][2] = y+1;
+            
         }
 
         else if(x == NbCol && y > 0){  /* Bord droite */
@@ -191,6 +194,7 @@ Matrix coordonneesVoisins(Image image,int y,int x, TypeVoisinage voisinage){
 
             M[1][2] = x;
             M[0][2] = y+1;
+            
         }
 
         else if(x > 0 && y == NbLig){ /* Bord bas */
@@ -205,6 +209,7 @@ Matrix coordonneesVoisins(Image image,int y,int x, TypeVoisinage voisinage){
 
             M[1][2] = x+1;
             M[0][2] = y;
+            
         } 
 
         else if(x == 0 && y > 0){ /* Bord gauche */
@@ -219,6 +224,7 @@ Matrix coordonneesVoisins(Image image,int y,int x, TypeVoisinage voisinage){
 
             M[1][2] = x;
             M[0][2] = y+1;
+            
         } 
         
         else if(x > 0 && y > 0){ /* millieu */
@@ -236,6 +242,7 @@ Matrix coordonneesVoisins(Image image,int y,int x, TypeVoisinage voisinage){
 
             M[1][3] = x;
             M[0][3] = y+1;
+            
         }
 
     }
@@ -267,6 +274,7 @@ Matrix coordonneesVoisins(Image image,int y,int x, TypeVoisinage voisinage){
 
             M[1][2] = x;
             M[0][2] = y+1;
+            
         }
         else if(x == 0 && y == NbLig){ /*Coin 3*/
             coords = MatAlloc(Int,2,3);
@@ -280,6 +288,7 @@ Matrix coordonneesVoisins(Image image,int y,int x, TypeVoisinage voisinage){
 
             M[1][2] = x+1;
             M[0][2] = y;
+            
         }
         else if(x == NbCol && y == NbLig){ /*Coin 4*/
             coords = MatAlloc(Int,2,3);
@@ -293,8 +302,8 @@ Matrix coordonneesVoisins(Image image,int y,int x, TypeVoisinage voisinage){
 
             M[1][2] = x-1;
             M[0][2] = y;
+            
         }
-
         else if(x > 0 && y == 0){ /* Bord haut */
             coords = MatAlloc(Int,2,5);
             M = MatGetInt(coords);
@@ -313,6 +322,7 @@ Matrix coordonneesVoisins(Image image,int y,int x, TypeVoisinage voisinage){
 
             M[1][4] = x+1;
             M[0][4] = y+1;
+            
         }
 
         else if(x == NbCol && y > 0){  /* Bord droite */
@@ -333,6 +343,7 @@ Matrix coordonneesVoisins(Image image,int y,int x, TypeVoisinage voisinage){
 
             M[1][4] = x;
             M[0][4] = y+1;
+            
         }
 
         else if(x > 0 && y == NbLig){ /* Bord bas */
@@ -353,6 +364,7 @@ Matrix coordonneesVoisins(Image image,int y,int x, TypeVoisinage voisinage){
 
             M[1][4] = x+1;
             M[0][4] = y;
+            
         } 
 
         else if(x == 0 && y > 0){ /* Bord gauche */
@@ -373,6 +385,7 @@ Matrix coordonneesVoisins(Image image,int y,int x, TypeVoisinage voisinage){
 
             M[1][4] = x+1;
             M[0][4] = y+1;
+            
         } 
         
         else if(x > 0 && y > 0){ /* millieu */
@@ -402,45 +415,102 @@ Matrix coordonneesVoisins(Image image,int y,int x, TypeVoisinage voisinage){
 
             M[1][7] = x+1;
             M[0][7] = y+1;
+            
         }
 
-
     }
-
 
     return coords;
 }
 
 
 int findCC(int* equivalences, int nbEtiquettes, int etiquette) {
- int result=-1;
- return result;
+
+    if (equivalences[etiquette] == etiquette){
+        return etiquette;
+    }else{
+        return findCC(equivalences, nbEtiquettes, equivalences[etiquette]);
+    }
   
 }
 
 
 void unionCC(int* equivalences, int nbEtiquettes, int etiquette1, int etiquette2){
+    int ref1, ref2;
+
+    ref1 = findCC(equivalences, nbEtiquettes, etiquette1);
+    ref2 = findCC(equivalences, nbEtiquettes, etiquette2);
+
+    equivalences[ref2] = ref1;
 }
 
 
-int main(int argc, char const *argv[]){
-    Image image;
-    Matrix res;
-    int NbLig,NbCol;
+int main(){
+    // Image image;
+    // Matrix res;
 
-    image = ImRead("TestCC.pbm");
+    // image = ImRead("TestCC.pbm");
 
-    /*Si erreur lecture image*/
-    if (image == NULL) return 1;
+    // /*Si erreur lecture image*/
+    // if (image == NULL) return 1;
 
-    NbLig=ImNbRow(image); 
-    NbCol=ImNbCol(image);
+    // res = coordonneesVoisins(image, 399, 599, V4);
+    // MatWriteAsc(res, "");
+    // res = coordonneesVoisins(image, 399, 599, V8);
 
-    res = coordonneesVoisins(image, 399, 599, V4);
-    MatWriteAsc(res, "");
-    res = coordonneesVoisins(image, 399, 599, V8);
+    // MatWriteAsc(res, "");
 
-    MatWriteAsc(res, "");
+    int nbEtiquettes = 0;
+    int* equivalences = creerTableau();
+    ajoutEtiquette(equivalences, &nbEtiquettes);
+    ajoutEtiquette(equivalences, &nbEtiquettes);
+    ajoutEtiquette(equivalences, &nbEtiquettes);
+    ajoutEtiquette(equivalences, &nbEtiquettes);
+    ajoutEtiquette(equivalences, &nbEtiquettes);
+    ajoutEtiquette(equivalences, &nbEtiquettes);
+    ajoutEtiquette(equivalences, &nbEtiquettes);
+    ajoutEtiquette(equivalences, &nbEtiquettes);
+    ajoutEtiquette(equivalences, &nbEtiquettes);
+    ajoutEtiquette(equivalences, &nbEtiquettes);
+    ajoutEtiquette(equivalences, &nbEtiquettes);
+    ajoutEtiquette(equivalences, &nbEtiquettes);
+    ajoutEtiquette(equivalences, &nbEtiquettes);
+
+    printf("NBetiquette : %d\n", nbEtiquettes);
+
+    for (int i = 0; i < nbEtiquettes; ++i)
+    {
+        printf("tab[%d] = %d\n", i, equivalences[i]);
+    }
+
+    unionCC(equivalences, nbEtiquettes, 1, 2);
+    unionCC(equivalences, nbEtiquettes, 4, 1);
+    unionCC(equivalences, nbEtiquettes, 10, 11);
+    unionCC(equivalences, nbEtiquettes, 10, 4);
+    unionCC(equivalences, nbEtiquettes, 7, 8);
+    unionCC(equivalences, nbEtiquettes, 6, 7);
+
+    printf("\n");
+    for (int i = 0; i < nbEtiquettes; ++i)
+    {
+        printf("tab[%d] = %d\n", i, equivalences[i]);
+    }
+
+    printf("\n");
+    printf("0 : %d\n", findCC(equivalences,nbEtiquettes,0));
+    printf("1 : %d\n", findCC(equivalences,nbEtiquettes,1));
+    printf("2 : %d\n", findCC(equivalences,nbEtiquettes,2));
+    printf("3 : %d\n", findCC(equivalences,nbEtiquettes,3));
+    printf("4 : %d\n", findCC(equivalences,nbEtiquettes,4));
+    printf("5 : %d\n", findCC(equivalences,nbEtiquettes,5));
+    printf("6 : %d\n", findCC(equivalences,nbEtiquettes,6));
+    printf("7 : %d\n", findCC(equivalences,nbEtiquettes,7));
+    printf("8 : %d\n", findCC(equivalences,nbEtiquettes,8));
+    printf("9 : %d\n", findCC(equivalences,nbEtiquettes,9));
+    printf("10 : %d\n", findCC(equivalences,nbEtiquettes,10));
+    printf("11 : %d\n", findCC(equivalences,nbEtiquettes,11));
+    printf("12 : %d\n", findCC(equivalences,nbEtiquettes,12));
+    
 
     return 0;
 }

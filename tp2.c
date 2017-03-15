@@ -2,8 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 
-#define TAB_SIZE 1024
+#define TAB_SIZE 10000//1024
 
 /* ------------------------------------------------------------------- 
  * Fonctions utiles
@@ -525,7 +526,8 @@ Matrix filterVoisins(Matrix voisins, Image image){
 }
 
 
-int main(){
+
+int main(int argc, char const *argv[]){
     Image image;
     Matrix res;
     Matrix voisins;
@@ -533,10 +535,25 @@ int main(){
     int* equivalences;
     unsigned char **I;
     int i, j, NbLig, NbCol;
+    TypeVoisinage type_voisinage;
 
     int **Mres, **Mvoisins;
 
-    image = ImRead("TestCC.pbm");
+    if (argc < 4){
+        printf("Usage : ./tp2 image_source image_dest type_voisinage\n");
+        return 1;
+    }
+
+    if(strcmp(argv[3], "V4")){
+        type_voisinage = V8;
+    }else if(strcmp(argv[3], "V8")){
+        type_voisinage = V4;
+    }else{
+        printf("Type voisinage inconnu\n");
+        return 1;
+    }
+
+    image = ImRead(argv[1]);
 
     /*Si erreur lecture image*/
     if (image == NULL) return 1;
@@ -568,7 +585,7 @@ int main(){
                 printf("\n\n(%d, %d)\n", i, j);
                 //Récupérer ses voisins
                 
-                voisins = coordonneesVoisins(image, i, j, V8);
+                voisins = coordonneesVoisins(image, i, j, type_voisinage);
                 voisins = filterVoisins(voisins, image);
                 Mvoisins = MatGetInt(voisins);
                 int sizeVoisins = MatNbCol(voisins);
@@ -637,7 +654,7 @@ int main(){
         }
     } 
 
-    saveResult(res, "test.ppm");
+    saveResult(res, argv[2]);
     
 
     return 0;

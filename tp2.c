@@ -444,72 +444,198 @@ void unionCC(int* equivalences, int nbEtiquettes, int etiquette1, int etiquette2
     equivalences[ref2] = ref1;
 }
 
+bool voisinsHasSameEtiquette(Matrix voisins, Matrix res){
+    int **Mvoisins, **Mres;
+
+    Mvoisins = MatGetInt(voisins);
+    Mres = MatGetInt(res);
+    int sizeVoisins = MatNbCol(voisins);
+
+    int xPremierVoisin = Mvoisins[0][0];
+    int yPremierVoisin = Mvoisins[1][0];
+
+    for (int i = 0; i < sizeVoisins; i++)
+    {
+        int x = Mvoisins[0][i];
+        int y = Mvoisins[1][i];
+
+        if(Mres[x][y] != Mres[xPremierVoisin][yPremierVoisin]){
+            return false;
+        }
+    }
+    return true;
+}
+
+bool aucunVoisinAEtiquette(Matrix voisins, Matrix res){
+    int **Mvoisins, **Mres;
+
+    Mvoisins = MatGetInt(voisins);
+    Mres = MatGetInt(res);
+    int sizeVoisins = MatNbCol(voisins);
+
+    for (int i = 0; i < sizeVoisins; i++)
+    {
+        int x = Mvoisins[0][i];
+        int y = Mvoisins[1][i];
+
+        if(Mres[x][y] != 0){
+            return false;
+        }
+    }
+    return true;
+}
+
+
+Matrix filterVoisins(Matrix voisins, Image image){
+
+    unsigned char **I;
+    int **Mvoisins, **Mres;
+    Mvoisins = MatGetInt(voisins);
+    int j = 0;
+
+    I = ImGetI(image);
+    int sizeVoisins = MatNbCol(voisins);
+
+    for (int i = 0; i < sizeVoisins; i++)
+    {
+        int x = Mvoisins[0][i];
+        int y = Mvoisins[1][i];
+        if(I[x][y] == 1){
+            j++;
+        }
+    }
+
+    Matrix coords = MatAlloc(Int,2,j);
+    Mres = MatGetInt(coords);
+    j = 0;
+
+    for (int i = 0; i < sizeVoisins; i++)
+    {
+        int x = Mvoisins[0][i];
+        int y = Mvoisins[1][i];
+
+        if(I[x][y] == 1){
+            Mres[0][j] = x;
+            Mres[1][j] = y;
+            j++;
+        }
+    }
+
+    return coords;
+}
+
 
 int main(){
-    // Image image;
-    // Matrix res;
-
-    // image = ImRead("TestCC.pbm");
-
-    // /*Si erreur lecture image*/
-    // if (image == NULL) return 1;
-
-    // res = coordonneesVoisins(image, 399, 599, V4);
-    // MatWriteAsc(res, "");
-    // res = coordonneesVoisins(image, 399, 599, V8);
-
-    // MatWriteAsc(res, "");
-
+    Image image;
+    Matrix res;
+    Matrix voisins;
     int nbEtiquettes = 0;
-    int* equivalences = creerTableau();
-    ajoutEtiquette(equivalences, &nbEtiquettes);
-    ajoutEtiquette(equivalences, &nbEtiquettes);
-    ajoutEtiquette(equivalences, &nbEtiquettes);
-    ajoutEtiquette(equivalences, &nbEtiquettes);
-    ajoutEtiquette(equivalences, &nbEtiquettes);
-    ajoutEtiquette(equivalences, &nbEtiquettes);
-    ajoutEtiquette(equivalences, &nbEtiquettes);
-    ajoutEtiquette(equivalences, &nbEtiquettes);
-    ajoutEtiquette(equivalences, &nbEtiquettes);
-    ajoutEtiquette(equivalences, &nbEtiquettes);
-    ajoutEtiquette(equivalences, &nbEtiquettes);
-    ajoutEtiquette(equivalences, &nbEtiquettes);
+    int* equivalences;
+    unsigned char **I;
+    int i, j, NbLig, NbCol;
+
+    int **Mres, **Mvoisins;
+
+    image = ImRead("TestCC.pbm");
+
+    /*Si erreur lecture image*/
+    if (image == NULL) return 1;
+
+    NbLig = ImNbRow(image); 
+    NbCol = ImNbCol(image);
+
+    res = MatAlloc(Int, NbLig, NbCol);
+    Mres = MatGetInt(res);
+
+    //Créer le tableau d'équivalences
+    equivalences = creerTableau();
+
+    //Ajouter l'étiquette 0 au tableau d'équivalence (pour le fond)
     ajoutEtiquette(equivalences, &nbEtiquettes);
 
-    printf("NBetiquette : %d\n", nbEtiquettes);
+    I = ImGetI(image);
 
-    for (int i = 0; i < nbEtiquettes; ++i)
-    {
-        printf("tab[%d] = %d\n", i, equivalences[i]);
+
+    //Pour chaque pixel
+    for (i = 0; i < NbLig; i++){
+        for (j = 0; j < NbCol; j++){
+
+
+            // Si le pixel appartient à la forme
+            if(I[i][j] == 1){
+
+
+                printf("\n\n(%d, %d)\n", i, j);
+                //Récupérer ses voisins
+                
+                voisins = coordonneesVoisins(image, i, j, V4);
+                voisins = filterVoisins(voisins, image);
+                Mvoisins = MatGetInt(voisins);
+                int sizeVoisins = MatNbCol(voisins);
+
+                printf("MRES[%d][%d] : %d     -- nbEtiquettes : %d     -- %d voisins\n", i, j, Mres[i][j], nbEtiquettes, sizeVoisins);
+
+                //Si aucun des voisins n'a d'étiquette
+                if(aucunVoisinAEtiquette(voisins, res)){
+
+                    //Créer une nouvelle étiquette
+                    printf("NOUVELLE ETIQUETTE : ");
+                    Mres[i][j] = nbEtiquettes;
+                    ajoutEtiquette(equivalences, &nbEtiquettes);
+                    printf("MRES[%d][%d] : %d\n", i, j, Mres[i][j]);
+                }
+                else{
+
+                    //On affiche la liste des voisins
+                    printf("Liste des voisins : \n");
+                    for (int k = 0; k < sizeVoisins; k++)
+                    {
+                        int x = Mvoisins[0][k];
+                        int y = Mvoisins[1][k];
+                        printf("(%d, %d) : %d\n", x, y, Mres[x][y]);         
+                    }
+
+                    printf("Certains voisins ont une étiquette\n");
+
+                    
+                    // Si tous les voisins ont la même étiquette
+                    if(voisinsHasSameEtiquette(voisins, res)){
+
+                        printf("Tous les voisins ont la même étiquette\n");
+                        //Donner l'étiquette au pixel
+                        Mres[i][j] = Mres[Mvoisins[0][0]][Mvoisins[1][0]];
+                        printf("MRES[%d][%d] : %d\n", i, j, Mres[i][j]);
+                    }else{
+                        printf("Tous les voisins n'ont PAS la même étiquette\n");
+                        // Donner l'étiquette du premier voisin au pixel
+                        Mres[i][j] = Mres[Mvoisins[0][0]][Mvoisins[1][0]];
+                        printf("MRES[%d][%d] : %d\n", i, j, Mres[i][j]);
+
+                        //Stocker la ou les équivalences
+                        //Pour chaque voisin
+                        // for (int k = 1; k < sizeVoisins; k++)
+                        // {
+                        //     int x = Mvoisins[0][k];
+                        //     int y = Mvoisins[1][k];
+                        //     unionCC(equivalences, nbEtiquettes, Mres[i][j], Mres[x][y]);                        
+                        // }
+                        
+                    }
+                }
+
+            }
+        }
     }
 
-    unionCC(equivalences, nbEtiquettes, 1, 2);
-    unionCC(equivalences, nbEtiquettes, 4, 1);
-    unionCC(equivalences, nbEtiquettes, 10, 11);
-    unionCC(equivalences, nbEtiquettes, 10, 4);
-    unionCC(equivalences, nbEtiquettes, 7, 8);
-    unionCC(equivalences, nbEtiquettes, 6, 7);
+    for (i = 0; i < NbLig; i++){
+        for (j = 0; j < NbCol; j++){
+            if(I[i][j] == 1){
+                Mres[i][j] = findCC(equivalences,nbEtiquettes,Mres[i][j]);
+            }
+        }
+    } 
 
-    printf("\n");
-    for (int i = 0; i < nbEtiquettes; ++i)
-    {
-        printf("tab[%d] = %d\n", i, equivalences[i]);
-    }
-
-    printf("\n");
-    printf("0 : %d\n", findCC(equivalences,nbEtiquettes,0));
-    printf("1 : %d\n", findCC(equivalences,nbEtiquettes,1));
-    printf("2 : %d\n", findCC(equivalences,nbEtiquettes,2));
-    printf("3 : %d\n", findCC(equivalences,nbEtiquettes,3));
-    printf("4 : %d\n", findCC(equivalences,nbEtiquettes,4));
-    printf("5 : %d\n", findCC(equivalences,nbEtiquettes,5));
-    printf("6 : %d\n", findCC(equivalences,nbEtiquettes,6));
-    printf("7 : %d\n", findCC(equivalences,nbEtiquettes,7));
-    printf("8 : %d\n", findCC(equivalences,nbEtiquettes,8));
-    printf("9 : %d\n", findCC(equivalences,nbEtiquettes,9));
-    printf("10 : %d\n", findCC(equivalences,nbEtiquettes,10));
-    printf("11 : %d\n", findCC(equivalences,nbEtiquettes,11));
-    printf("12 : %d\n", findCC(equivalences,nbEtiquettes,12));
+    saveResult(res, "test.ppm");
     
 
     return 0;

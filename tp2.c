@@ -568,7 +568,7 @@ int main(){
                 printf("\n\n(%d, %d)\n", i, j);
                 //Récupérer ses voisins
                 
-                voisins = coordonneesVoisins(image, i, j, V4);
+                voisins = coordonneesVoisins(image, i, j, V8);
                 voisins = filterVoisins(voisins, image);
                 Mvoisins = MatGetInt(voisins);
                 int sizeVoisins = MatNbCol(voisins);
@@ -613,12 +613,14 @@ int main(){
 
                         //Stocker la ou les équivalences
                         //Pour chaque voisin
-                        // for (int k = 1; k < sizeVoisins; k++)
-                        // {
-                        //     int x = Mvoisins[0][k];
-                        //     int y = Mvoisins[1][k];
-                        //     unionCC(equivalences, nbEtiquettes, Mres[i][j], Mres[x][y]);                        
-                        // }
+                        for (int k = 1; k < sizeVoisins; k++)
+                        {
+                            int x = Mvoisins[0][k];
+                            int y = Mvoisins[1][k];
+                            if(Mres[x][y] > 0){
+                                unionCC(equivalences, nbEtiquettes, Mres[i][j], Mres[x][y]);                        
+                            }
+                        }
                         
                     }
                 }

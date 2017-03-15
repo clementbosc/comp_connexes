@@ -581,52 +581,28 @@ int main(int argc, char const *argv[]){
             // Si le pixel appartient à la forme
             if(I[i][j] == 1){
 
-
-                printf("\n\n(%d, %d)\n", i, j);
                 //Récupérer ses voisins
-                
                 voisins = coordonneesVoisins(image, i, j, type_voisinage);
                 voisins = filterVoisins(voisins, image);
                 Mvoisins = MatGetInt(voisins);
                 int sizeVoisins = MatNbCol(voisins);
 
-                printf("MRES[%d][%d] : %d     -- nbEtiquettes : %d     -- %d voisins\n", i, j, Mres[i][j], nbEtiquettes, sizeVoisins);
-
                 //Si aucun des voisins n'a d'étiquette
                 if(aucunVoisinAEtiquette(voisins, res)){
 
                     //Créer une nouvelle étiquette
-                    printf("NOUVELLE ETIQUETTE : ");
                     Mres[i][j] = nbEtiquettes;
                     ajoutEtiquette(equivalences, &nbEtiquettes);
-                    printf("MRES[%d][%d] : %d\n", i, j, Mres[i][j]);
                 }
                 else{
-
-                    //On affiche la liste des voisins
-                    printf("Liste des voisins : \n");
-                    for (int k = 0; k < sizeVoisins; k++)
-                    {
-                        int x = Mvoisins[0][k];
-                        int y = Mvoisins[1][k];
-                        printf("(%d, %d) : %d\n", x, y, Mres[x][y]);         
-                    }
-
-                    printf("Certains voisins ont une étiquette\n");
-
                     
                     // Si tous les voisins ont la même étiquette
                     if(voisinsHasSameEtiquette(voisins, res)){
-
-                        printf("Tous les voisins ont la même étiquette\n");
                         //Donner l'étiquette au pixel
                         Mres[i][j] = Mres[Mvoisins[0][0]][Mvoisins[1][0]];
-                        printf("MRES[%d][%d] : %d\n", i, j, Mres[i][j]);
                     }else{
-                        printf("Tous les voisins n'ont PAS la même étiquette\n");
                         // Donner l'étiquette du premier voisin au pixel
                         Mres[i][j] = Mres[Mvoisins[0][0]][Mvoisins[1][0]];
-                        printf("MRES[%d][%d] : %d\n", i, j, Mres[i][j]);
 
                         //Stocker la ou les équivalences
                         //Pour chaque voisin

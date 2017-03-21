@@ -22,11 +22,11 @@ RM=rm -f
 
 #~ # --> ci-dessous, ajoutez a la suite les noms des fichiers objets 
 # separes par un espace
-OBJECTS=limace.o tp2.o
+OBJECTS=limace.o comp_connexes.o
 
 # --> ci-dessous, ajoutez a la suite les noms des fichiers executables 
 # separes par un espace
-EXE=tp2
+EXE=comp_connexes
 
 # Ne modifiez pas cette partie
 .PHONY: all
@@ -34,14 +34,14 @@ all: $(EXE)
 
 # Dependances non implicites des executables
 OBJ=limace.o
-tp2: $(OBJ) tp2.o 
+comp_connexes: $(OBJ) comp_connexes.o 
 # --> ajoutez ici une ligne par programme selon le meme modele
 
 
 # Dependances non implicites des objets
 HEAD=limace.h
 limace.o: $(HEAD)
-tp2.o: $(HEAD)
+comp_connexes.o: $(HEAD)
 # --> ajoutez ici une ligne par programme selon le meme modele
 
 

@@ -6,6 +6,7 @@ Algorithme d'identification de composantes connexes d'une image binaire.
 avec `image_source` l'adresse de l'image à traiter (format .pbm), `image_dest` le chemin de l'image de sortie (format .ppm) et `type_voisignage` "V8" ou "V4" (pour une traitement à 8 voisignage ou à 4).
 
 ## Résultats
+
 Pour l'image d'origine suivante :
 ![Image originale](https://ups.clementbosc.fr/tp2-igtai/original.jpg)
 

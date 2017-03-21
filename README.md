@@ -8,10 +8,11 @@ avec `image_source` l'adresse de l'image à traiter (format .pbm), `image_dest` 
 ## Résultats
 
 Pour l'image d'origine suivante :
+
 ![Image originale](https://ups.clementbosc.fr/tp2-igtai/original.jpg)
 
 On obtient le résulat suivant en 4 voisinages :
-![Image originale](https://ups.clementbosc.fr/tp2-igtai/res_v4.jpg)
+![Résulat 4 voisignage](https://ups.clementbosc.fr/tp2-igtai/res_v4.jpg)
 
 Et pour 8 voisinages (une seule forme reconnue) :
-![Image originale](https://ups.clementbosc.fr/tp2-igtai/res_v8.jpg)
+![Résulat 8 voisignage](https://ups.clementbosc.fr/tp2-igtai/res_v8.jpg)
